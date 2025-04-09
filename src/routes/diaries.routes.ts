@@ -1,13 +1,31 @@
-import express from 'express'; //Esmodules
+import express from 'express' // Esmodules
+import * as diaryServices from '../services/diaryServices'
 
-const router = express.Router() //creamos un router
+const router = express.Router() // creamos un router
 
-router.get('/', (_req, res) =>{
-    res.send('Fetching all entry diaries')
+router.get('/', (_req, res) => {
+  res.send(diaryServices.getEntriesWithoutSenstiveInfo())
 })
 
-router.post('/',(_req, res) =>{
-    res.send('Saving a diary')
+router.get('/:id', (req, res) => {
+  const diary = diaryServices.findById(+req.params.id)
+
+  return (diary != null)
+    ? res.send(diary)
+    : res.sendStatus(404)
+})
+
+router.post('/', (req, res) => {
+  const {date, weather, visibility, comment} = req.body
+
+  const newDiaryEntry = diaryServices.addEntry(
+    date,
+    weather,
+    visibility,
+    comment
+  )
+
+  res.json(newDiaryEntry)
 })
 
 export default router
